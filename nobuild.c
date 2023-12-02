@@ -1,0 +1,26 @@
+#define NOBUILD_IMPLEMENTATION
+#include "nobuild.h"
+
+#define CC "gcc"
+#define CFLAGS "-Wall", "-Wextra", "-pedantic", "-std=c11"
+#define SRC_DIR "src/"
+#define SRC SRC_DIR "main.c"
+#define BUILD_DIR "build/"
+#define TARGET BUILD_DIR "Chess"
+#define LDFLAGS "-lraylib", "-lm"
+
+void build(void) {
+  CMD("mkdir", "-p", BUILD_DIR);
+  CMD(CC, CFLAGS, SRC, "-o", TARGET, LDFLAGS);
+}
+
+void run(void) { CMD(TARGET); }
+
+int main(int argc, char **argv) {
+  GO_REBUILD_URSELF(argc, argv);
+
+  build();
+  run();
+
+  return 0;
+}
