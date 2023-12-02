@@ -1,6 +1,6 @@
-#include <malloc.h>
-#include <memory.h>
 #include <raylib.h>
+#include <malloc.h>
+#include <vector>
 
 #define DEFAULT_WINDOW_WIDTH 720
 #define DEFAULT_WINDOW_HEIGHT 720
@@ -66,6 +66,12 @@ typedef struct {
   Texture2D texture;
 } Character;
 
+typedef struct {
+  int w, h;
+  Assets assets;
+  std::vector<Character> board;
+} Chess;
+
 void LoadAssets(Assets *assets) {
   assets->B_Bishop = LoadTexture(B_BISHOP_TEXTURE_PATH);
   assets->B_King = LoadTexture(B_KING_TEXTURE_PATH);
@@ -98,18 +104,18 @@ void UnloadAssets(Assets *assets) {
   UnloadTexture(assets->W_Rook);
 }
 
-void Draw(int w, int h, Character *board) {
+void Draw(Chess *chess) {
   BeginDrawing();
   ClearBackground(BLACK); // we just want to clear the bg, dont care about
                           // modularizing the bg
 
   Color bg = FIRST_TILE_COLOR;
-  int tileW = w / BOARD_SIZE_AXIS;
-  int tileH = h / BOARD_SIZE_AXIS;
+  float tileW = (float)chess->w / BOARD_SIZE_AXIS;
+  float tileH = (float)chess->h / BOARD_SIZE_AXIS;
 
   for (int y = 0; y < BOARD_SIZE_AXIS; ++y) {
     for (int x = 0; x < BOARD_SIZE_AXIS; ++x) {
-      int xx = x * tileW, yy = y * tileH;
+      float xx = x * tileW, yy = y * tileH;
 
       // draw tile
       Rectangle tileRec = {xx, yy, tileW, tileH};
@@ -117,7 +123,7 @@ void Draw(int w, int h, Character *board) {
       bg = ColorToInt(bg) == ColorToInt(WHITE) ? BLACK : WHITE;
 
       int index = BOARD_SIZE_AXIS * y + x;
-      Character character = board[index];
+      Character character = chess->board[index];
 
       // draw characters
       if (character.type != EMPTY && character.type != HINT) {
@@ -137,7 +143,7 @@ void Draw(int w, int h, Character *board) {
   EndDrawing();
 }
 
-void Update(int w, int h, Character *board) {
+void Update(Chess *chess) {
   // TODO: check if user clicks on tile,
   // TODO: if he does then get available position's tiles
   // TODO: highlight the returned tiles
@@ -145,45 +151,40 @@ void Update(int w, int h, Character *board) {
   // TODO: if a user clicks on a tile twice hide hints
   // TODO: if a user clicks on a different tile while hinting remove old
   // hints and render new ones
+
+  // TODO: if a user clicks a hint: remove hints && move the character to specified position
+  // TODO: then change turn
 }
 
 int main() {
-  int w = DEFAULT_WINDOW_WIDTH, h = DEFAULT_WINDOW_HEIGHT;
+  Chess chess = {0};
+  chess.w = DEFAULT_WINDOW_WIDTH, chess.h = DEFAULT_WINDOW_HEIGHT;
 
   SetConfigFlags(FLAG_WINDOW_RESIZABLE);
-  InitWindow(w, h, WINDOW_TITLE);
+  InitWindow(chess.w, chess.h, WINDOW_TITLE);
   SetTargetFPS(TARGET_FPS);
 
-  Assets assets = {0};
-  LoadAssets(&assets);
+  chess.assets = (Assets){0};
+  LoadAssets(&chess.assets);
 
-  Character board[BOARD_SIZE_AXIS * BOARD_SIZE_AXIS] = {
-      {ROOK, B_CHARACTER_COLOR, assets.B_Rook},
-      {KNIGHT, B_CHARACTER_COLOR, assets.B_Knight},
-      {BISHOP, B_CHARACTER_COLOR, assets.B_Bishop},
-      {KING, B_CHARACTER_COLOR, assets.B_King},
-      {QUEEN, B_CHARACTER_COLOR, assets.B_Queen},
-      {BISHOP, B_CHARACTER_COLOR, assets.B_Bishop},
-      {KNIGHT, B_CHARACTER_COLOR, assets.B_Knight},
-      {ROOK, B_CHARACTER_COLOR, assets.B_Rook},
+  chess.board = {
+      {ROOK, B_CHARACTER_COLOR, chess.assets.B_Rook},
+      {KNIGHT, B_CHARACTER_COLOR, chess.assets.B_Knight},
+      {BISHOP, B_CHARACTER_COLOR, chess.assets.B_Bishop},
+      {KING, B_CHARACTER_COLOR, chess.assets.B_King},
+      {QUEEN, B_CHARACTER_COLOR, chess.assets.B_Queen},
+      {BISHOP, B_CHARACTER_COLOR, chess.assets.B_Bishop},
+      {KNIGHT, B_CHARACTER_COLOR, chess.assets.B_Knight},
+      {ROOK, B_CHARACTER_COLOR, chess.assets.B_Rook},
 
-      {PAWN, B_CHARACTER_COLOR, assets.B_Pawn},
-      {PAWN, B_CHARACTER_COLOR, assets.B_Pawn},
-      {PAWN, B_CHARACTER_COLOR, assets.B_Pawn},
-      {PAWN, B_CHARACTER_COLOR, assets.B_Pawn},
-      {PAWN, B_CHARACTER_COLOR, assets.B_Pawn},
-      {PAWN, B_CHARACTER_COLOR, assets.B_Pawn},
-      {PAWN, B_CHARACTER_COLOR, assets.B_Pawn},
-      {PAWN, B_CHARACTER_COLOR, assets.B_Pawn},
-
-      {EMPTY},
-      {EMPTY},
-      {EMPTY},
-      {EMPTY},
-      {EMPTY},
-      {EMPTY},
-      {EMPTY},
-      {EMPTY},
+      {PAWN, B_CHARACTER_COLOR, chess.assets.B_Pawn},
+      {PAWN, B_CHARACTER_COLOR, chess.assets.B_Pawn},
+      {PAWN, B_CHARACTER_COLOR, chess.assets.B_Pawn},
+      {PAWN, B_CHARACTER_COLOR, chess.assets.B_Pawn},
+      {PAWN, B_CHARACTER_COLOR, chess.assets.B_Pawn},
+      {PAWN, B_CHARACTER_COLOR, chess.assets.B_Pawn},
+      {PAWN, B_CHARACTER_COLOR, chess.assets.B_Pawn},
+      {PAWN, B_CHARACTER_COLOR, chess.assets.B_Pawn},
 
       {EMPTY},
       {EMPTY},
@@ -212,31 +213,40 @@ int main() {
       {EMPTY},
       {EMPTY},
 
-      {PAWN, W_CHARACTER_COLOR, assets.W_Pawn},
-      {PAWN, W_CHARACTER_COLOR, assets.W_Pawn},
-      {PAWN, W_CHARACTER_COLOR, assets.W_Pawn},
-      {PAWN, W_CHARACTER_COLOR, assets.W_Pawn},
-      {PAWN, W_CHARACTER_COLOR, assets.W_Pawn},
-      {PAWN, W_CHARACTER_COLOR, assets.W_Pawn},
-      {PAWN, W_CHARACTER_COLOR, assets.W_Pawn},
-      {PAWN, W_CHARACTER_COLOR, assets.W_Pawn},
+      {EMPTY},
+      {EMPTY},
+      {EMPTY},
+      {EMPTY},
+      {EMPTY},
+      {EMPTY},
+      {EMPTY},
+      {EMPTY},
 
-      {ROOK, W_CHARACTER_COLOR, assets.W_Rook},
-      {KNIGHT, W_CHARACTER_COLOR, assets.W_Knight},
-      {BISHOP, W_CHARACTER_COLOR, assets.W_Bishop},
-      {QUEEN, W_CHARACTER_COLOR, assets.W_Queen},
-      {KING, W_CHARACTER_COLOR, assets.W_King},
-      {BISHOP, W_CHARACTER_COLOR, assets.W_Bishop},
-      {KNIGHT, W_CHARACTER_COLOR, assets.W_Knight},
-      {ROOK, W_CHARACTER_COLOR, assets.W_Rook}};
+      {PAWN, W_CHARACTER_COLOR, chess.assets.W_Pawn},
+      {PAWN, W_CHARACTER_COLOR, chess.assets.W_Pawn},
+      {PAWN, W_CHARACTER_COLOR, chess.assets.W_Pawn},
+      {PAWN, W_CHARACTER_COLOR, chess.assets.W_Pawn},
+      {PAWN, W_CHARACTER_COLOR, chess.assets.W_Pawn},
+      {PAWN, W_CHARACTER_COLOR, chess.assets.W_Pawn},
+      {PAWN, W_CHARACTER_COLOR, chess.assets.W_Pawn},
+      {PAWN, W_CHARACTER_COLOR, chess.assets.W_Pawn},
+
+      {ROOK, W_CHARACTER_COLOR, chess.assets.W_Rook},
+      {KNIGHT, W_CHARACTER_COLOR, chess.assets.W_Knight},
+      {BISHOP, W_CHARACTER_COLOR, chess.assets.W_Bishop},
+      {QUEEN, W_CHARACTER_COLOR, chess.assets.W_Queen},
+      {KING, W_CHARACTER_COLOR, chess.assets.W_King},
+      {BISHOP, W_CHARACTER_COLOR, chess.assets.W_Bishop},
+      {KNIGHT, W_CHARACTER_COLOR, chess.assets.W_Knight},
+      {ROOK, W_CHARACTER_COLOR, chess.assets.W_Rook}};
 
   while (!WindowShouldClose()) {
-    w = GetRenderWidth(), h = GetRenderHeight();
-    Update(w, h, (Character *)&board);
-    Draw(w, h, (Character *)&board);
+    chess.w = GetRenderWidth(), chess.h = GetRenderHeight();
+    Update(&chess);
+    Draw(&chess);
   }
 
-  UnloadAssets(&assets);
+  UnloadAssets(&chess.assets);
 
   CloseWindow();
   return 0;

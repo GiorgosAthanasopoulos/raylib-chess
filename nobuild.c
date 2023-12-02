@@ -1,10 +1,10 @@
 #define NOBUILD_IMPLEMENTATION
 #include "nobuild.h"
 
-#define CC "gcc"
-#define CFLAGS "-Wall", "-Wextra", "-pedantic", "-std=c11"
+#define CC "g++"
+#define CFLAGS "-Wall", "-Wextra", "-pedantic", "-std=c++11"
 #define SRC_DIR "src/"
-#define SRC SRC_DIR "main.c"
+#define SRC SRC_DIR "main.cpp"
 #define BUILD_DIR "build/"
 #define TARGET BUILD_DIR "Chess"
 #define LDFLAGS "-lraylib", "-lm"
