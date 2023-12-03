@@ -17,6 +17,8 @@ game logic or other c++ norms).
 
 # USAGE - LINUX (The real operating system)
 
+- ```git clone https://github.com/giorgosathanasopoulos/raylib-chess```,
+- ```cd raylib-chess```,
 - ```g++ nobuild.c -o nobuild```
 - ```./nobuild```
 
