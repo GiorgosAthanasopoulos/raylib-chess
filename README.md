@@ -22,7 +22,7 @@ game logic or other c++ norms).
 - ```g++ nobuild.c -o nobuild```
 - ```./nobuild```
 
-# USAGE - Windows (Oh boy, here we go...)
+# USAGE - Windows (Just use linux, and make your life ez...Anyway here goes...)
 
 - Lets call the directory that we will use to clone the repositories in ```$PROJECTS```.
 - Start by cloning [raylib-chess](https://github.com/GiorgosAthanasopoulos/raylib-chess) (the actual game): ```git clone https://github.com/giorgosathanasopoulos/raylib-chess $PROJECTS```
