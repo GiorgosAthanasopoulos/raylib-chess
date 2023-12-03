@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 #Install dependencies
-sudo apt install git
 sudo apt install build-essential
 sudo apt install libasound2-dev libx11-dev libxrandr-dev libxi-dev libgl1-mesa-dev libglu1-mesa-dev libxcursor-dev libxinerama-dev
 
