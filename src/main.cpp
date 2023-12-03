@@ -13,6 +13,9 @@
 #define CHARACTER_SCALE_FACTOR 3
 #define HINT_RADIUS 25 // NOTE: Hint circle radius
 #define H1_FONT_SIZE 300
+#define WINDOW_FLAGS FLAG_WINDOW_RESIZABLE // NOTE: separated by '|'
+#define TEXT_OFFSET_SCALE                                                      \
+  10 // NOTE: for maximized text scale of offset off the window borders
 
 #define WINDOW_TITLE "Chess"
 #define ASSETS_PATH "./assets/"
@@ -45,6 +48,8 @@
 #define ENEMY_COLOR RED
 #define TRANSPARENT                                                            \
   (Color) { 0, 0, 0, 0 }
+#define TOP_SIDE_COLOR                                                         \
+  B_CHARACTER_COLOR // are B or W at the top side of the board?
 
 #define EXIT_KEY KEY_NULL
 #define RESTART_KEY KEY_ESCAPE
@@ -77,6 +82,8 @@ typedef enum {
   EMPTY,
 } CharacterType;
 
+CharacterType PAWN_UPGRADE = QUEEN;
+
 typedef struct {
   CharacterType type;
   Color color;
@@ -94,6 +101,7 @@ typedef struct {
 
   Color turn;
   Color winner;
+  Color top;
 } Chess;
 
 void LoadAssets(Assets *assets) {
@@ -132,88 +140,90 @@ void UnloadAssets(Assets *assets) {
   UnloadSound(assets->move);
 }
 
-std::vector<Character> DefaultBoard(Assets *assets) {
-  return (std::vector<Character>){{ROOK, B_CHARACTER_COLOR, assets->B_Rook},
-                                  {KNIGHT, B_CHARACTER_COLOR, assets->B_Knight},
-                                  {BISHOP, B_CHARACTER_COLOR, assets->B_Bishop},
-                                  {KING, B_CHARACTER_COLOR, assets->B_King},
-                                  {QUEEN, B_CHARACTER_COLOR, assets->B_Queen},
-                                  {BISHOP, B_CHARACTER_COLOR, assets->B_Bishop},
-                                  {KNIGHT, B_CHARACTER_COLOR, assets->B_Knight},
-                                  {ROOK, B_CHARACTER_COLOR, assets->B_Rook},
+bool ColorsEqual(Color a, Color b) {
+  return a.r == b.r && a.g == b.g && a.b == b.b && a.a == b.a;
+}
 
-                                  //{PAWN, B_CHARACTER_COLOR, assets->B_Pawn},
-                                  {EMPTY},
-                                  {PAWN, B_CHARACTER_COLOR, assets->B_Pawn},
-                                  {PAWN, B_CHARACTER_COLOR, assets->B_Pawn},
-                                  {PAWN, B_CHARACTER_COLOR, assets->B_Pawn},
-                                  {PAWN, B_CHARACTER_COLOR, assets->B_Pawn},
-                                  {PAWN, B_CHARACTER_COLOR, assets->B_Pawn},
-                                  {PAWN, B_CHARACTER_COLOR, assets->B_Pawn},
-                                  {PAWN, B_CHARACTER_COLOR, assets->B_Pawn},
+void DefaultBoard(Chess *chess) {
+  Assets *assets = &chess->assets;
+  Color other = ColorsEqual(chess->top, W_CHARACTER_COLOR) ? B_CHARACTER_COLOR
+                                                           : W_CHARACTER_COLOR;
+  chess->board = {{ROOK, chess->top, assets->B_Rook},
+                  {KNIGHT, chess->top, assets->B_Knight},
+                  {BISHOP, chess->top, assets->B_Bishop},
+                  {KING, chess->top, assets->B_King},
+                  {QUEEN, chess->top, assets->B_Queen},
+                  {BISHOP, chess->top, assets->B_Bishop},
+                  {KNIGHT, chess->top, assets->B_Knight},
+                  {ROOK, chess->top, assets->B_Rook},
 
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
+                  {PAWN, chess->top, assets->B_Pawn},
+                  {PAWN, chess->top, assets->B_Pawn},
+                  {PAWN, chess->top, assets->B_Pawn},
+                  {PAWN, chess->top, assets->B_Pawn},
+                  {PAWN, chess->top, assets->B_Pawn},
+                  {PAWN, chess->top, assets->B_Pawn},
+                  {PAWN, chess->top, assets->B_Pawn},
+                  {PAWN, chess->top, assets->B_Pawn},
 
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
 
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
 
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
-                                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
 
-                                  {PAWN, W_CHARACTER_COLOR, assets->W_Pawn},
-                                  {PAWN, W_CHARACTER_COLOR, assets->W_Pawn},
-                                  {PAWN, W_CHARACTER_COLOR, assets->W_Pawn},
-                                  {PAWN, W_CHARACTER_COLOR, assets->W_Pawn},
-                                  {PAWN, W_CHARACTER_COLOR, assets->W_Pawn},
-                                  {PAWN, W_CHARACTER_COLOR, assets->W_Pawn},
-                                  {PAWN, W_CHARACTER_COLOR, assets->W_Pawn},
-                                  {PAWN, W_CHARACTER_COLOR, assets->W_Pawn},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
+                  {EMPTY},
 
-                                  {ROOK, W_CHARACTER_COLOR, assets->W_Rook},
-                                  {KNIGHT, W_CHARACTER_COLOR, assets->W_Knight},
-                                  {BISHOP, W_CHARACTER_COLOR, assets->W_Bishop},
-                                  {QUEEN, W_CHARACTER_COLOR, assets->W_Queen},
-                                  {KING, W_CHARACTER_COLOR, assets->W_King},
-                                  {BISHOP, W_CHARACTER_COLOR, assets->W_Bishop},
-                                  {KNIGHT, W_CHARACTER_COLOR, assets->W_Knight},
-                                  {ROOK, W_CHARACTER_COLOR, assets->W_Rook}};
+                  {PAWN, other, assets->W_Pawn},
+                  {PAWN, other, assets->W_Pawn},
+                  {PAWN, other, assets->W_Pawn},
+                  {PAWN, other, assets->W_Pawn},
+                  {PAWN, other, assets->W_Pawn},
+                  {PAWN, other, assets->W_Pawn},
+                  {PAWN, other, assets->W_Pawn},
+                  {PAWN, other, assets->W_Pawn},
+
+                  {ROOK, other, assets->W_Rook},
+                  {KNIGHT, other, assets->W_Knight},
+                  {BISHOP, other, assets->W_Bishop},
+                  {QUEEN, other, assets->W_Queen},
+                  {KING, other, assets->W_King},
+                  {BISHOP, other, assets->W_Bishop},
+                  {KNIGHT, other, assets->W_Knight},
+                  {ROOK, other, assets->W_Rook}};
 }
 
 bool MouseHovered(Rectangle rect, Vector2 mousePos) {
   return mousePos.x >= rect.x && mousePos.x <= rect.x + rect.width &&
          mousePos.y >= rect.y && mousePos.y <= rect.y + rect.height;
-}
-
-bool ColorsEqual(Color a, Color b) {
-  return a.r == b.r && a.g == b.g && a.b == b.b && a.a == b.a;
 }
 
 bool TileInHintingMoves(std::vector<int> hintingMoves, int tile) {
@@ -223,7 +233,8 @@ bool TileInHintingMoves(std::vector<int> hintingMoves, int tile) {
 
 int AssertTextFitsInViewport(const char *text, int *fontSize, int w, int h) {
   int textW = MeasureText(text, *fontSize);
-  while (textW > w - textW / 10 || *fontSize > h - *fontSize / 10) {
+  while (textW > w - textW / TEXT_OFFSET_SCALE ||
+         *fontSize > h - *fontSize / TEXT_OFFSET_SCALE) {
     *fontSize = *fontSize - 1;
     textW = MeasureText(text, *fontSize);
   }
@@ -235,6 +246,7 @@ void WalkVertically(std::vector<Character> *board, int tile,
   int tileY = tile / (BOARD_SIZE_AXIS - 1);
   int tileX = tile - tileY;
 
+  // up
   for (int y = tileY - 1; y >= 0; --y) {
     int index = y * BOARD_SIZE_AXIS + tileX;
     Character character = (*board)[index];
@@ -248,6 +260,7 @@ void WalkVertically(std::vector<Character> *board, int tile,
       break;
     }
   }
+  // down
   for (int y = tileY + 1; y <= BOARD_SIZE_AXIS; ++y) {
     int index = y * BOARD_SIZE_AXIS + tileX;
     Character character = (*board)[index];
@@ -268,6 +281,7 @@ void WalkHorizontally(std::vector<Character> *board, int tile,
   int tileY = tile / (BOARD_SIZE_AXIS - 1);
   int tileX = tile - tileY;
 
+  // left
   for (int x = tileX - 1; x >= 0; --x) {
     int index = tileY * BOARD_SIZE_AXIS + x;
     Character character = (*board)[index];
@@ -281,6 +295,7 @@ void WalkHorizontally(std::vector<Character> *board, int tile,
       break;
     }
   }
+  // right
   for (int x = tileX + 1; x <= BOARD_SIZE_AXIS; ++x) {
     int index = tileY * BOARD_SIZE_AXIS + x;
     Character character = (*board)[index];
@@ -302,6 +317,15 @@ void WalkDiagonally(std::vector<Character> *board, int tile,
   int tileX = tile - tileY;
 
   // TODO: implement WalkDiagonally
+  // top left
+  // top right
+  // bottom left
+  // bottom right
+}
+
+bool IsNeighbourValid(std::vector<Character> *board, int tile, int index) {
+  return (*board)[index].type == EMPTY ||
+         !ColorsEqual((*board)[index].color, (*board)[tile].color);
 }
 
 void Neighbours(std::vector<Character> *board, int tile,
@@ -311,14 +335,23 @@ void Neighbours(std::vector<Character> *board, int tile,
 
   int previousY = tileY - 1;
   int nextY = tileY + 1;
-  out->push_back(previousY * BOARD_SIZE_AXIS + (tileX - 1));
-  out->push_back(previousY * BOARD_SIZE_AXIS + (tileX));
-  out->push_back(previousY * BOARD_SIZE_AXIS + (tileX + 1));
-  out->push_back(nextY * BOARD_SIZE_AXIS + (tileX - 1));
-  out->push_back(nextY * BOARD_SIZE_AXIS + (tileX));
-  out->push_back(nextY * BOARD_SIZE_AXIS + (tileX + 1));
-  out->push_back(tileY * BOARD_SIZE_AXIS + (tileX - 1));
-  out->push_back(tileY * BOARD_SIZE_AXIS + (tileX + 1));
+
+  int indices[] = {
+      previousY * BOARD_SIZE_AXIS + (tileX - 1),
+      previousY * BOARD_SIZE_AXIS + (tileX),
+      previousY * BOARD_SIZE_AXIS + (tileX + 1),
+      nextY * BOARD_SIZE_AXIS + (tileX - 1),
+      nextY * BOARD_SIZE_AXIS + (tileX),
+      nextY * BOARD_SIZE_AXIS + (tileX + 1),
+      tileY * BOARD_SIZE_AXIS + (tileX - 1),
+      tileY * BOARD_SIZE_AXIS + (tileX + 1),
+  };
+
+  for (int i = 0; i < sizeof(indices) / sizeof(int); ++i) {
+    if (IsNeighbourValid(board, tile, indices[i])) {
+      out->push_back(indices[i]);
+    }
+  }
 }
 
 void L(std::vector<Character> *board, int tile, std::vector<int> *out) {
@@ -356,8 +389,11 @@ std::vector<int> GetHints(Chess *chess, int tile) {
   case PAWN:
     // TODO:
     // if first time moving pawn can move 2 in front, otherwise 1
-    // cant move backwards
-    // can kill front or diagonal
+    // can kill front or diagonal (1 rank)
+    if (ColorsEqual(chess->board[tile].color, W_CHARACTER_COLOR)) {
+
+    } else {
+    }
     break;
   case EMPTY:
     return std::vector<int>();
@@ -398,6 +434,7 @@ void Draw(Chess *chess) {
                   (float)character.texture.height *
                       (CHARACTER_SCALE_FACTOR + 1) / 2};
 
+          // change color based on what tile we re drawing: enemy/friendly/hint
           Color color = character.color;
           if (chess->hinting) {
             if (index == chess->hintingTile) {
@@ -412,6 +449,7 @@ void Draw(Chess *chess) {
           DrawTextureEx(character.texture, characterVec, 0,
                         CHARACTER_SCALE_FACTOR, color);
         } else {
+          // draw hint
           if (chess->hinting) {
             if (TileInHintingMoves(chess->hintingMoves, index)) {
               DrawCircle(xx + tileW / 2, yy + tileH / 2, HINT_RADIUS,
@@ -436,12 +474,12 @@ void Draw(Chess *chess) {
 }
 
 void ResetGame(Chess *chess) {
-    chess->board = DefaultBoard(&chess->assets);
-    chess->winner = TRANSPARENT;
-    chess->turn = STARTING_COLOR;
-    chess->hinting = false;
-    chess->hintingTile = -1;
-    chess->hintingMoves = std::vector<int>();
+  DefaultBoard(chess);
+  chess->winner = TRANSPARENT;
+  chess->turn = STARTING_COLOR;
+  chess->hinting = false;
+  chess->hintingTile = -1;
+  chess->hintingMoves = std::vector<int>();
 }
 
 void Update(Chess *chess) {
@@ -494,9 +532,16 @@ void Update(Chess *chess) {
           chess->turn = ColorsEqual(chess->turn, B_CHARACTER_COLOR)
                             ? W_CHARACTER_COLOR
                             : B_CHARACTER_COLOR;
-          if (clickedTile >= (8 - 1) * BOARD_SIZE_AXIS) {
-            // TODO: if pawn makes it to enemy base give user a choice to make
-            // it whatever character he wants
+          if (chess->board[clickedTile].type == PAWN) {
+            if (ColorsEqual(chess->board[clickedTile].color,
+                            W_CHARACTER_COLOR) &&
+                clickedTile < BOARD_SIZE_AXIS) {
+              chess->board[clickedTile].type = PAWN_UPGRADE;
+            } else if (ColorsEqual(chess->board[clickedTile].color,
+                                   B_CHARACTER_COLOR) &&
+                       clickedTile >= (BOARD_SIZE_AXIS - 1) * BOARD_SIZE_AXIS) {
+              chess->board[clickedTile].type = PAWN_UPGRADE;
+            }
           }
         } else {
           // clicked on enemy team or empty
@@ -510,10 +555,11 @@ void Update(Chess *chess) {
 int main() {
   Chess chess = {0};
   chess.w = DEFAULT_WINDOW_WIDTH, chess.h = DEFAULT_WINDOW_HEIGHT;
-  chess.turn = STARTING_COLOR, chess.winner = TRANSPARENT;
+  chess.turn = STARTING_COLOR, chess.winner = TRANSPARENT,
+  chess.top = TOP_SIDE_COLOR;
   chess.hinting = false, chess.hintingTile = -1;
 
-  SetConfigFlags(FLAG_WINDOW_RESIZABLE);
+  SetConfigFlags(WINDOW_FLAGS);
   InitWindow(chess.w, chess.h, WINDOW_TITLE);
   SetTargetFPS(TARGET_FPS);
   InitAudioDevice();
@@ -522,7 +568,7 @@ int main() {
   chess.assets = (Assets){0};
   LoadAssets(&chess.assets);
 
-  chess.board = DefaultBoard(&chess.assets);
+  DefaultBoard(&chess);
 
   while (!WindowShouldClose()) {
     chess.w = GetRenderWidth(), chess.h = GetRenderHeight();
