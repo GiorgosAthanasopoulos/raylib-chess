@@ -37,7 +37,7 @@ In the new terminal run:
 - ```premake-mingw.bat``` (This will download raylib for us - along with creating a makefile for our project).
 Now lets copy raylib-chess in the game-premake src directory:
 - ```rm ./game/src/*```,
-- ```cp ../raylib-chess/src/* ./games/src/```,
+- ```cp ../raylib-chess/src/* ./game/src/```,
 - ```make```(You should see the raylib library being compiled),
 - Although the game can run now (exe is in ```_bin/Debug```) we need to move our assets in ```_bin/Debug/assets/``` for our game to be able to find them.
 - After you move them over, the game should run. If you encounter any issues or have any question feel free to make an issue.
