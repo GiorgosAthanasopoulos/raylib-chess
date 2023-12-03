@@ -2,9 +2,19 @@
 
 A simple implementation of chess in raylib.
 
-## NOTE 
+## NOTE
 
 Although the project source files have .cpp extensions the project is mainly
 written in plain c, apart from the use of vectors and some algorithms,
-so the structure is more c-like (which would exlpain no oop definition of the 
+so the structure is more c-like (which would exlpain no oop definition of the
 game logic or other c++ norms).
+
+# REQUIREMENTS
+
+- A cpp compiler (g++),
+- Raylib installed and in compiler's $PATH.
+
+# USAGE
+
+- ```g++ nobuild.c -o nobuild```
+- ```./nobuild```
