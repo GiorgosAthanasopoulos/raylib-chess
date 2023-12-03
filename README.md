@@ -9,14 +9,18 @@ written in plain c, apart from the use of vectors and some algorithms,
 so the structure is more c-like (which would exlpain no oop definition of the
 game logic or other c++ norms).
 
+# REQUIREMENTS - Linux/Windows
+
+- Git:
+  - Windows: ```winget install git.git```
+  - Linux(ubuntu-based): ```sudo apt install git```
+
 # USAGE - LINUX
 
+- ```git clone https://github.com/GiorgosAthanasopoulos/raylib-chess```
+- ```cd raylib-chess```
 - ```chmod +x bootstrap.sh```
 - ```./bootstrap.sh```
-
-# REQUIREMENTS - Windows
-
-- Git (```winget install git.git```)
 
 # USAGE - Windows (Just use linux, and make your life ez...Anyway here goes...)
 
