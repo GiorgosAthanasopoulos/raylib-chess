@@ -11,8 +11,8 @@ game logic or other c++ norms).
 
 # USAGE - LINUX
 
-- ```chmod +x build.sh```
-- ```./build.sh```
+- ```chmod +x bootstrap.sh```
+- ```./bootstrap.sh```
 
 # USAGE - Windows (Just use linux, and make your life ez...Anyway here goes...)
 
