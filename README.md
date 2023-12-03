@@ -14,6 +14,10 @@ game logic or other c++ norms).
 - ```chmod +x bootstrap.sh```
 - ```./bootstrap.sh```
 
+# REQUIREMENTS - Windows
+
+- Git (```winget install git.git```)
+
 # USAGE - Windows (Just use linux, and make your life ez...Anyway here goes...)
 
 - Lets call the directory that we will use to clone the repositories in ```$PROJECTS```.
