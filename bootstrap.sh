@@ -14,7 +14,5 @@ cd ../../
 rm -rf raylib
 
 #Clone and run game
-git clone https://github.com/giorgosathanasopoulos/raylib-chess
-cd raylib-chess
 g++ nobuild.c -o nobuild
 ./nobuild
