@@ -17,8 +17,8 @@ game logic or other c++ norms).
 
 # USAGE - LINUX (The real operating system)
 
-- ```git clone https://github.com/giorgosathanasopoulos/raylib-chess```,
-- ```cd raylib-chess```,
+- ```git clone https://github.com/giorgosathanasopoulos/raylib-chess```
+- ```cd raylib-chess```
 - ```g++ nobuild.c -o nobuild```
 - ```./nobuild```
 
@@ -36,13 +36,13 @@ game logic or other c++ norms).
 Lets configure and build/run our project:
 -  Run the executable ```$PROJECTS/w64devkit/w64devkit/w64devkit.exe```
 In the new terminal run:
-- ```cd $PROJECTS/game-premake```,
+- ```cd $PROJECTS/game-premake```
 - ```premake-mingw.bat``` (This will download raylib for us - along with creating a makefile for our project).
 Now lets copy raylib-chess in the game-premake src directory:
-- ```rm ./game/src/*```,
-- ```cp ../raylib-chess/src/* ./game/src/```,
-- ```cp ../raylib-chess/_build/game-premake.make ./_build/```,
+- ```rm ./game/src/*```
+- ```cp ../raylib-chess/src/* ./game/src/```
+- ```cp ../raylib-chess/_build/game-premake.make ./_build/```
 - ```make```(You should see the raylib library being compiled),
-- ```mkdir assets```,
-- ```cp ../raylib-chess/assets/* ./assets/```,
+- ```mkdir assets```
+- ```cp ../raylib-chess/assets/* ./assets/```
 - ```_bin/Debug/game-premake.exe```
