@@ -4,7 +4,7 @@
 #define CC "g++"
 #define CFLAGS "-Wall", "-Wextra", "-pedantic", "-std=c++11"
 #define SRC_DIR "src/"
-#define SRC SRC_DIR "main.cpp"
+#define SRC SRC_DIR "raylib_game.cpp"
 #define BUILD_DIR "build/"
 #define TARGET BUILD_DIR "Chess"
 #define LDFLAGS "-lraylib", "-lm"
