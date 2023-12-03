@@ -41,5 +41,5 @@ Now lets copy raylib-chess in the game-premake src directory:
 - ```cp ../raylib-chess/_build/game-premake.make ./_build/```,
 - ```make```(You should see the raylib library being compiled),
 - ```mkdir assets```,
-- ```cp ../raylib-chess/assets/* _./assets/```,
+- ```cp ../raylib-chess/assets/* ./assets/```,
 - ```_bin/Debug/game-premake.exe```
