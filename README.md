@@ -9,10 +9,10 @@ written in plain c, apart from the use of vectors and some algorithms,
 so the structure is more c-like (which would exlpain no oop definition of the
 game logic or other c++ norms).
 
-# REQUIREMENTS
+# REQUIREMENTS (LINUX - WINDOWS USAGE STARTS FROM SCRATCH)
 
-- A cpp compiler (g++),
-- Raylib installed and in compiler's $PATH.
+- A cpp compiler (g++) (```sudo apt install g++```),
+- Raylib installed and in compiler's $PATH (sudo apt install raylib).
 
 # USAGE - LINUX (The real operating system)
 
