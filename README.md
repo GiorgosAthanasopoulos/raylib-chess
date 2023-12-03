@@ -11,6 +11,7 @@ game logic or other c++ norms).
 
 # REQUIREMENTS (LINUX - WINDOWS USAGE STARTS FROM SCRATCH)
 
+- Git (to clone the repository - otherwise just download and extract the zip) (```sudo apt install git```),
 - A cpp compiler (g++) (```sudo apt install build-essential```),
 - Raylib installed and in compiler's $PATH (https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux).
 
