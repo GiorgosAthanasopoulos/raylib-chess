@@ -42,4 +42,4 @@ Now lets copy raylib-chess in the game-premake src directory:
 - ```make```(You should see the raylib library being compiled),
 - ```mkdir _bin/Debug/assets/```,
 - ```cp ../raylib-chess/assets/* _bin/Debug/assets```,
-- After you move them over, the game should run. If you encounter any issues or have any question feel free to make an issue.
+- ```_bin/Debug/game-premake.exe```
