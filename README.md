@@ -21,7 +21,7 @@ game logic or other c++ norms).
 
 # USAGE - Windows (Oh boy, here we go...)
 
-- Lets call the directory that we will use to clone the repositories in $PROJECTS.
+- Lets call the directory that we will use to clone the repositories in ```$PROJECTS```.
 - Start by cloning [raylib-chess](https://github.com/GiorgosAthanasopoulos/raylib-chess) (the actual game): ```git clone https://github.com/giorgosathanasopoulos/raylib-chess $PROJECTS```
 - We need a compiler - lets use [W64Devkit](https://github.com/skeeto/w64devkit/):
   - Download the w64devkit zip from the [W64Devkit Releases](https://github.com/skeeto/w64devkit/releases) page.
