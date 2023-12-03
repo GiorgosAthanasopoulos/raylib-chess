@@ -4,14 +4,14 @@
 #define DEFAULT_WINDOW_WIDTH 720
 #define DEFAULT_WINDOW_HEIGHT 720
 #define TARGET_FPS 60
-// WARNING: BOARD_SIZE_AXIS acts more like a const rather than config field.
+// NOTE: BOARD_SIZE_AXIS acts more like a const rather than config field.
 // Changing it will require modifications in codebase.
 #define BOARD_SIZE_AXIS 8
 // NOTE: Character = Chess piece
 #define CHARACTER_SCALE_FACTOR 3
 #define HINT_RADIUS 25 // NOTE: Hint circle radius
 #define H1_FONT_SIZE 300
-#define WINDOW_FLAGS FLAG_WINDOW_RESIZABLE // NOTE: separated by '|'
+#define WINDOW_FLAGS FLAG_WINDOW_RESIZABLE // NOTE: window flags separated by '|'
 #define TEXT_OFFSET_SCALE                                                      \
   10 // NOTE: for maximized text scale of offset off the window borders
 
@@ -48,6 +48,7 @@
 #define ENEMY_COLOR RED
 #define TRANSPARENT                                                            \
   (Color) { 0, 0, 0, 0 }
+#define NO_WINNER_COLOR TRANSPARENT
 #define TOP_SIDE_COLOR                                                         \
   B_CHARACTER_COLOR // are B or W at the top side of the board?
 

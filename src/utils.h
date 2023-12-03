@@ -1,10 +1,11 @@
 #pragma once
 
-#include <raylib.h>
 #include <algorithm>
+#include <raylib.h>
+#include <stdio.h>
 
-#include "types.h"
 #include "config.h"
+#include "types.h"
 
 void LoadAssets(Assets *assets) {
   assets->B_Bishop = LoadTexture(B_BISHOP_TEXTURE_PATH);
@@ -48,25 +49,26 @@ bool ColorsEqual(Color a, Color b) {
 
 void DefaultBoard(Chess *chess) {
   Assets *assets = &chess->assets;
-  Color other = ColorsEqual(chess->top, W_CHARACTER_COLOR) ? B_CHARACTER_COLOR
-                                                           : W_CHARACTER_COLOR;
-  chess->board = {{ROOK, chess->top, assets->B_Rook},
-                  {KNIGHT, chess->top, assets->B_Knight},
-                  {BISHOP, chess->top, assets->B_Bishop},
-                  {KING, chess->top, assets->B_King},
-                  {QUEEN, chess->top, assets->B_Queen},
-                  {BISHOP, chess->top, assets->B_Bishop},
-                  {KNIGHT, chess->top, assets->B_Knight},
-                  {ROOK, chess->top, assets->B_Rook},
+  Color other = ColorsEqual(TOP_SIDE_COLOR, W_CHARACTER_COLOR)
+                    ? B_CHARACTER_COLOR
+                    : W_CHARACTER_COLOR;
+  chess->board = {{ROOK, TOP_SIDE_COLOR, assets->B_Rook},
+                  {KNIGHT, TOP_SIDE_COLOR, assets->B_Knight},
+                  {BISHOP, TOP_SIDE_COLOR, assets->B_Bishop},
+                  {KING, TOP_SIDE_COLOR, assets->B_King},
+                  {QUEEN, TOP_SIDE_COLOR, assets->B_Queen},
+                  {BISHOP, TOP_SIDE_COLOR, assets->B_Bishop},
+                  {KNIGHT, TOP_SIDE_COLOR, assets->B_Knight},
+                  {ROOK, TOP_SIDE_COLOR, assets->B_Rook},
 
-                  {PAWN, chess->top, assets->B_Pawn},
-                  {PAWN, chess->top, assets->B_Pawn},
-                  {PAWN, chess->top, assets->B_Pawn},
-                  {PAWN, chess->top, assets->B_Pawn},
-                  {PAWN, chess->top, assets->B_Pawn},
-                  {PAWN, chess->top, assets->B_Pawn},
-                  {PAWN, chess->top, assets->B_Pawn},
-                  {PAWN, chess->top, assets->B_Pawn},
+                  {PAWN, TOP_SIDE_COLOR, assets->B_Pawn},
+                  {PAWN, TOP_SIDE_COLOR, assets->B_Pawn},
+                  {PAWN, TOP_SIDE_COLOR, assets->B_Pawn},
+                  {PAWN, TOP_SIDE_COLOR, assets->B_Pawn},
+                  {PAWN, TOP_SIDE_COLOR, assets->B_Pawn},
+                  {PAWN, TOP_SIDE_COLOR, assets->B_Pawn},
+                  {PAWN, TOP_SIDE_COLOR, assets->B_Pawn},
+                  {PAWN, TOP_SIDE_COLOR, assets->B_Pawn},
 
                   {EMPTY},
                   {EMPTY},
@@ -143,34 +145,90 @@ int AssertTextFitsInViewport(const char *text, int *fontSize, int w, int h) {
   return textW;
 }
 
-void WalkVertically(std::vector<Character> *board, int tile,
-                    std::vector<int> *out) {
-  int tileY = tile / (BOARD_SIZE_AXIS - 1);
-  int tileX = tile - tileY;
+int CoordinatesToBoardIndex(int x, int y) { return y * BOARD_SIZE_AXIS + x; }
 
-  // up
+bool InBounds(int x, int y) {
+  return x >= 0 && x < BOARD_SIZE_AXIS && y >= 0 && y < BOARD_SIZE_AXIS;
+}
+
+void WalkVerticallyUpwards(std::vector<Character> *board, int tile,
+                           std::vector<int> *out) {
+  int tileY = tile / BOARD_SIZE_AXIS;
+  int tileX = tile % BOARD_SIZE_AXIS;
+
   for (int y = tileY - 1; y >= 0; --y) {
-    int index = y * BOARD_SIZE_AXIS + tileX;
+    int index = CoordinatesToBoardIndex(tileX, y);
     Character character = (*board)[index];
 
     if (character.type == EMPTY) {
-      out->push_back(y * BOARD_SIZE_AXIS + tileX);
+      out->push_back(index);
     } else if (!ColorsEqual(character.color, (*board)[tile].color)) {
-      out->push_back(y * BOARD_SIZE_AXIS + tileX);
+      out->push_back(index);
       break;
     } else {
       break;
     }
   }
-  // down
-  for (int y = tileY + 1; y <= BOARD_SIZE_AXIS; ++y) {
-    int index = y * BOARD_SIZE_AXIS + tileX;
+}
+
+void WalkVerticallyDownwards(std::vector<Character> *board, int tile,
+                             std::vector<int> *out) {
+  int tileY = tile / BOARD_SIZE_AXIS;
+  int tileX = tile % BOARD_SIZE_AXIS;
+  for (int y = tileY + 1; y < BOARD_SIZE_AXIS; ++y) {
+    int index = CoordinatesToBoardIndex(tileX, y);
     Character character = (*board)[index];
 
     if (character.type == EMPTY) {
-      out->push_back(y * BOARD_SIZE_AXIS + tileX);
+      out->push_back(index);
     } else if (!ColorsEqual(character.color, (*board)[tile].color)) {
-      out->push_back(y * BOARD_SIZE_AXIS + tileX);
+      out->push_back(index);
+      break;
+    } else {
+      break;
+    }
+  }
+}
+
+void WalkVertically(std::vector<Character> *board, int tile,
+                    std::vector<int> *out) {
+  WalkVerticallyUpwards(board, tile, out);
+  WalkVerticallyDownwards(board, tile, out);
+}
+
+void WalkHorizontallyLeftwards(std::vector<Character> *board, int tile,
+                               std::vector<int> *out) {
+  int tileY = tile / BOARD_SIZE_AXIS;
+  int tileX = tile % BOARD_SIZE_AXIS;
+
+  for (int x = tileX - 1; x >= 0; --x) {
+    int index = CoordinatesToBoardIndex(x, tileY);
+    Character character = (*board)[index];
+
+    if (character.type == EMPTY) {
+      out->push_back(index);
+    } else if (!ColorsEqual(character.color, (*board)[tile].color)) {
+      out->push_back(index);
+      break;
+    } else {
+      break;
+    }
+  }
+}
+
+void WalkHorizontallyRightwards(std::vector<Character> *board, int tile,
+                                std::vector<int> *out) {
+  int tileY = tile / BOARD_SIZE_AXIS;
+  int tileX = tile % BOARD_SIZE_AXIS;
+
+  for (int x = tileX + 1; x < BOARD_SIZE_AXIS; ++x) {
+    int index = CoordinatesToBoardIndex(x, tileY);
+    Character character = (*board)[index];
+
+    if (character.type == EMPTY) {
+      out->push_back(index);
+    } else if (!ColorsEqual(character.color, (*board)[tile].color)) {
+      out->push_back(index);
       break;
     } else {
       break;
@@ -180,49 +238,105 @@ void WalkVertically(std::vector<Character> *board, int tile,
 
 void WalkHorizontally(std::vector<Character> *board, int tile,
                       std::vector<int> *out) {
-  int tileY = tile / (BOARD_SIZE_AXIS - 1);
-  int tileX = tile - tileY;
+  WalkHorizontallyLeftwards(board, tile, out);
+  WalkHorizontallyRightwards(board, tile, out);
+}
 
-  // left
-  for (int x = tileX - 1; x >= 0; --x) {
-    int index = tileY * BOARD_SIZE_AXIS + x;
-    Character character = (*board)[index];
+void WalkDiagonallyTopLeft(std::vector<Character> *board, int tile,
+                           std::vector<int> *out) {
+  int tileY = tile / BOARD_SIZE_AXIS;
+  int tileX = tile % BOARD_SIZE_AXIS;
 
-    if (character.type == EMPTY) {
-      out->push_back(tileY * BOARD_SIZE_AXIS + x);
-    } else if (!ColorsEqual(character.color, (*board)[tile].color)) {
-      out->push_back(tileY * BOARD_SIZE_AXIS + x);
-      break;
-    } else {
-      break;
-    }
+  int y = tileY - 1;
+  int x = tileX - 1;
+  int index = CoordinatesToBoardIndex(x, y);
+  Character character = (*board)[index];
+  while (character.type == EMPTY && InBounds(x, y)) {
+    out->push_back(index);
+    y--;
+    x--;
+    index = CoordinatesToBoardIndex(x, y);
+    character = (*board)[index];
   }
-  // right
-  for (int x = tileX + 1; x <= BOARD_SIZE_AXIS; ++x) {
-    int index = tileY * BOARD_SIZE_AXIS + x;
-    Character character = (*board)[index];
+  if (character.type != EMPTY &&
+      !ColorsEqual((*board)[tile].color, character.color) && InBounds(x, y)) {
+    out->push_back(index);
+  }
+}
 
-    if (character.type == EMPTY) {
-      out->push_back(tileY * BOARD_SIZE_AXIS + x);
-    } else if (!ColorsEqual(character.color, (*board)[tile].color)) {
-      out->push_back(tileY * BOARD_SIZE_AXIS + x);
-      break;
-    } else {
-      break;
-    }
+void WalkDiagonallyTopRight(std::vector<Character> *board, int tile,
+                            std::vector<int> *out) {
+  int tileY = tile / BOARD_SIZE_AXIS;
+  int tileX = tile % BOARD_SIZE_AXIS;
+
+  int y = tileY - 1;
+  int x = tileX + 1;
+  int index = CoordinatesToBoardIndex(x, y);
+  Character character = (*board)[index];
+  while (character.type == EMPTY && InBounds(x, y)) {
+    out->push_back(index);
+    y--;
+    x++;
+    index = CoordinatesToBoardIndex(x, y);
+    character = (*board)[index];
+  }
+  if (character.type != EMPTY &&
+      !ColorsEqual((*board)[tile].color, character.color) && InBounds(x, y)) {
+    out->push_back(index);
+  }
+}
+
+void WalkDiagonallyBottomLeft(std::vector<Character> *board, int tile,
+                              std::vector<int> *out) {
+  int tileY = tile / BOARD_SIZE_AXIS;
+  int tileX = tile % BOARD_SIZE_AXIS;
+
+  // bottom left
+  int y = tileY + 1;
+  int x = tileX - 1;
+  int index = CoordinatesToBoardIndex(x, y);
+  Character character = (*board)[index];
+  while (character.type == EMPTY && InBounds(x, y)) {
+    out->push_back(index);
+    y++;
+    x--;
+    index = CoordinatesToBoardIndex(x, y);
+    character = (*board)[index];
+  }
+  if (character.type != EMPTY &&
+      !ColorsEqual((*board)[tile].color, character.color) && InBounds(x, y)) {
+    out->push_back(index);
+  }
+}
+
+void WalkDiagonallyBottomRight(std::vector<Character> *board, int tile,
+                               std::vector<int> *out) {
+  int tileY = tile / BOARD_SIZE_AXIS;
+  int tileX = tile % BOARD_SIZE_AXIS;
+
+  int y = tileY + 1;
+  int x = tileX + 1;
+  int index = CoordinatesToBoardIndex(x, y);
+  Character character = (*board)[index];
+  while (character.type == EMPTY && InBounds(x, y)) {
+    out->push_back(index);
+    y++;
+    x++;
+    index = CoordinatesToBoardIndex(x, y);
+    character = (*board)[index];
+  }
+  if (character.type != EMPTY &&
+      !ColorsEqual((*board)[tile].color, character.color) && InBounds(x, y)) {
+    out->push_back(index);
   }
 }
 
 void WalkDiagonally(std::vector<Character> *board, int tile,
                     std::vector<int> *out) {
-  int tileY = tile / (BOARD_SIZE_AXIS - 1);
-  int tileX = tile - tileY;
-
-  // TODO: implement WalkDiagonally
-  // top left
-  // top right
-  // bottom left
-  // bottom right
+  WalkDiagonallyTopLeft(board, tile, out);
+  WalkDiagonallyTopRight(board, tile, out);
+  WalkDiagonallyBottomLeft(board, tile, out);
+  WalkDiagonallyBottomRight(board, tile, out);
 }
 
 bool IsNeighbourValid(std::vector<Character> *board, int tile, int index) {
@@ -232,41 +346,76 @@ bool IsNeighbourValid(std::vector<Character> *board, int tile, int index) {
 
 void Neighbours(std::vector<Character> *board, int tile,
                 std::vector<int> *out) {
-  int tileY = tile / (BOARD_SIZE_AXIS - 1);
-  int tileX = tile - tileY;
+  int tileY = tile / BOARD_SIZE_AXIS;
+  int tileX = tile % BOARD_SIZE_AXIS;
 
-  int previousY = tileY - 1;
-  int nextY = tileY + 1;
-
-  int indices[] = {
-      previousY * BOARD_SIZE_AXIS + (tileX - 1),
-      previousY * BOARD_SIZE_AXIS + (tileX),
-      previousY * BOARD_SIZE_AXIS + (tileX + 1),
-      nextY * BOARD_SIZE_AXIS + (tileX - 1),
-      nextY * BOARD_SIZE_AXIS + (tileX),
-      nextY * BOARD_SIZE_AXIS + (tileX + 1),
-      tileY * BOARD_SIZE_AXIS + (tileX - 1),
-      tileY * BOARD_SIZE_AXIS + (tileX + 1),
-  };
-
-  for (int i = 0; i < sizeof(indices) / sizeof(int); ++i) {
-    if (IsNeighbourValid(board, tile, indices[i])) {
-      out->push_back(indices[i]);
+  for (int y = tileY - 1; y <= tileY + 1; ++y) {
+    for (int x = tileX - 1; x <= tileX + 1; ++x) {
+      int index = CoordinatesToBoardIndex(x, y);
+      if (IsNeighbourValid(board, tile, index)) {
+        out->push_back(index);
+      }
     }
   }
 }
 
 void L(std::vector<Character> *board, int tile, std::vector<int> *out) {
-  int tileY = tile / (BOARD_SIZE_AXIS - 1);
-  int tileX = tile - tileY;
+  int tileY = tile / BOARD_SIZE_AXIS;
+  int tileX = tile % BOARD_SIZE_AXIS;
 
-  // TODO: implement L
+  int possibleMoves[8][2] = {{2, 1}, {2, -1}, {-2, 1}, {-2, -1},
+                             {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
+
+  for (int i = 0; i < 8; i++) {
+    int newX = tileX + possibleMoves[i][0];
+    int newY = tileY + possibleMoves[i][1];
+    int index = CoordinatesToBoardIndex(newX, newY);
+    Character character = (*board)[index];
+
+    if (InBounds(newX, newY) &&
+        (character.type == EMPTY ||
+         !ColorsEqual(character.color, (*board)[tile].color))) {
+      out->push_back(index);
+    }
+  }
+}
+
+void Pawn(std::vector<Character> *board, int tile, std::vector<int> *out) {
+  int tileY = tile / BOARD_SIZE_AXIS;
+  int tileX = tile % BOARD_SIZE_AXIS;
+
+  // isTop check if pawn is from top or bottom spawn
+  bool isTop = ColorsEqual(TOP_SIDE_COLOR, (*board)[tile].color);
+  // one move forward
+  int oneYForward = isTop ? tileY + 1 : tileY - 1;
+  // if tileY == spawnY then allow to move 2 y's forward
+  int twoYForward = isTop ? tileY + 2 : tileY - 2;
+  // check for possible diagonal kills
+  int diagOne = isTop ? CoordinatesToBoardIndex(tileX + 1, tileY + 1)
+                      : CoordinatesToBoardIndex(tileX - 1, tileY - 1);
+  int diagTwo = isTop ? CoordinatesToBoardIndex(tileX - 1, tileY + 1)
+                      : CoordinatesToBoardIndex(tileX + 1, tileY - 1);
+
+  out->push_back(CoordinatesToBoardIndex(tileX, oneYForward));
+  if (isTop ? tileY == 1 : tileY == BOARD_SIZE_AXIS - 2) {
+    if ((*board)[oneYForward * BOARD_SIZE_AXIS + tileX].type == EMPTY) {
+      out->push_back(CoordinatesToBoardIndex(tileX, twoYForward));
+    }
+  }
+  if (!ColorsEqual((*board)[tile].color, (*board)[diagOne].color) &&
+      (*board)[diagOne].type != EMPTY) {
+    out->push_back(diagOne);
+  }
+  if (!ColorsEqual((*board)[tile].color, (*board)[diagTwo].color) &&
+      (*board)[diagTwo].type != EMPTY) {
+    out->push_back(diagTwo);
+  }
 }
 
 std::vector<int> GetHints(Chess *chess, int tile) {
   std::vector<int> res;
-  int tileY = tile / (BOARD_SIZE_AXIS - 1);
-  int tileX = tile - tileY;
+  int tileY = tile / BOARD_SIZE_AXIS;
+  int tileX = tile % BOARD_SIZE_AXIS;
 
   switch (chess->board[tile].type) {
   case ROOK: {
@@ -289,13 +438,7 @@ std::vector<int> GetHints(Chess *chess, int tile) {
     WalkDiagonally(&chess->board, tile, &res);
     break;
   case PAWN:
-    // TODO:
-    // if first time moving pawn can move 2 in front, otherwise 1
-    // can kill front or diagonal (1 rank)
-    if (ColorsEqual(chess->board[tile].color, W_CHARACTER_COLOR)) {
-
-    } else {
-    }
+    Pawn(&chess->board, tile, &res);
     break;
   case EMPTY:
     return std::vector<int>();
@@ -307,9 +450,51 @@ std::vector<int> GetHints(Chess *chess, int tile) {
 
 void ResetGame(Chess *chess) {
   DefaultBoard(chess);
-  chess->winner = TRANSPARENT;
+  chess->winner = NO_WINNER_COLOR;
   chess->turn = STARTING_COLOR;
   chess->hinting = false;
   chess->hintingTile = -1;
   chess->hintingMoves = std::vector<int>();
+}
+
+int AssertCharacterFitsInTile(Texture2D character, int scale, int tileW,
+                              int tileH) {
+  while (character.width > tileW || character.height > tileH) {
+    scale -= 0.5;
+  }
+  return scale;
+}
+
+int AssertHintCircleFitsInTile(int radius, int tileW, int tileH) {
+  int size = radius * 2;
+  while (size > tileW || size > tileH) {
+    radius--;
+  }
+  return radius;
+}
+
+bool HaveWinner(Color color) { return !ColorsEqual(color, NO_WINNER_COLOR); }
+
+Color BgColorSwap(Color bg) {
+  return ColorsEqual(bg, LIGHT_COLOR) ? DARK_COLOR : LIGHT_COLOR;
+}
+
+bool IsChessPiece(Character character) { return character.type != EMPTY; }
+
+bool IsEnemy(Character a, Character b) {
+  return !ColorsEqual(a.color, b.color) && a.type != EMPTY && b.type != EMPTY;
+}
+
+void CheckIfPawnMaxRanked(Character *a, int index, Assets *assets) {
+  bool isTop = ColorsEqual(a->color, TOP_SIDE_COLOR);
+  bool topMaxed = isTop && index > (BOARD_SIZE_AXIS * BOARD_SIZE_AXIS) - BOARD_SIZE_AXIS - 1;
+  bool bottomMaxed = !isTop && index < BOARD_SIZE_AXIS;
+  if (topMaxed || bottomMaxed) {
+    a->type = QUEEN;
+    if (ColorsEqual(a->color, W_CHARACTER_COLOR)) {
+        a->texture = assets->W_Queen;
+    } else {
+        a->texture = assets->B_Queen;
+    }
+  }
 }

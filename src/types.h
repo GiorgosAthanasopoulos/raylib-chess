@@ -1,6 +1,7 @@
 #pragma once
 
 #include <raylib.h>
+#include <utility>
 #include <vector>
 
 typedef struct {
@@ -50,5 +51,4 @@ typedef struct {
 
   Color turn;
   Color winner;
-  Color top;
 } Chess;
