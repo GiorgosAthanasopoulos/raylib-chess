@@ -9,18 +9,10 @@ written in plain c, apart from the use of vectors and some algorithms,
 so the structure is more c-like (which would exlpain no oop definition of the
 game logic or other c++ norms).
 
-# REQUIREMENTS (LINUX - WINDOWS USAGE STARTS FROM SCRATCH)
+# USAGE - LINUX
 
-- Git (to clone the repository - otherwise just download and extract the zip) (```sudo apt install git```),
-- A cpp compiler (g++) (```sudo apt install build-essential```),
-- Raylib installed and in compiler's $PATH (https://github.com/raysan5/raylib/wiki/Working-on-GNU-Linux).
-
-# USAGE - LINUX (The real operating system)
-
-- ```git clone https://github.com/giorgosathanasopoulos/raylib-chess```
-- ```cd raylib-chess```
-- ```g++ nobuild.c -o nobuild```
-- ```./nobuild```
+- ```chmod +x build.sh```
+- ```./build.sh```
 
 # USAGE - Windows (Just use linux, and make your life ez...Anyway here goes...)
 
