@@ -146,7 +146,7 @@ int main() {
   InitAudioDevice();
   SetExitKey(EXIT_KEY);
 
-  chess.assets = (Assets){0};
+  chess.assets = {0};
   LoadAssets(&chess.assets);
 
   DefaultBoard(&chess);
