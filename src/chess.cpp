@@ -9,8 +9,8 @@ void Draw(Chess *chess) {
 
   if (HaveWinner(chess->winner)) {
     const char *text = ColorsEqual(chess->winner, W_CHARACTER_COLOR)
-                           ? "Winner: WHITE"
-                           : "Winner: BLACK";
+                           ? W_WINNER_TEXT
+                           : B_WINNER_TEXT;
     int fontSize = H1_FONT_SIZE;
     int textW = AssertTextFitsInViewport(text, &fontSize, chess->w, chess->h);
     DrawText(text, chess->w / 2 - textW / 2, chess->h / 2 - fontSize / 2,

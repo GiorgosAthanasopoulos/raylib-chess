@@ -34,6 +34,8 @@
 #define W_ROOK_TEXTURE_PATH ASSETS_PATH "W_Rook.png"
 #define MOVE_SOUND_PATH ASSETS_PATH "move.wav"
 #define WIN_FAVICON_PATH ASSETS_PATH "favicon.png"
+#define B_WINNER_TEXT "Winner: Black"
+#define W_WINNER_TEXT "Winner: White"
 
 // == COLOR RELATED SETTINGS ==
 #define WINDOW_BG_COLOR BLACK
