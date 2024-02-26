@@ -141,15 +141,16 @@ void Update(Chess *chess) {
 int main() {
   // Init game state
   Chess chess = {0};
+  Image favicon = LoadImage(WIN_FAVICON_PATH);
+
   chess.w = DEFAULT_WINDOW_WIDTH, chess.h = DEFAULT_WINDOW_HEIGHT;
   chess.turn = STARTING_COLOR, chess.winner = NO_WINNER_COLOR,
   chess.hinting = false, chess.hintingTile = -1;
 
   // Init raylib
   SetConfigFlags(WINDOW_FLAGS);
-  Image favicon = LoadImage(WIN_FAVICON_PATH);
-  SetWindowIcon(favicon);
   InitWindow(chess.w, chess.h, WINDOW_TITLE);
+  SetWindowIcon(favicon);
   SetTargetFPS(TARGET_FPS);
   InitAudioDevice();
   SetExitKey(EXIT_KEY);
